@@ -2,10 +2,30 @@ using UnityEngine;
 
 public class Ingredient : MonoBehaviour
 {
-    bool cooked;
+    [SerializeField] bool cooked;
     [SerializeField] Color cookedColor;
     [SerializeField] Color burnedColor;
     MeshRenderer renderer;
+    [SerializeField] bool canBurn;
+    [SerializeField] float cookingTime;
+    [SerializeField] float burnTime;
+
+    public float GetCookingTime()
+    {
+        return cookingTime;
+    }
+    public float GetBurnTime()
+    {
+        return burnTime;
+    }
+    public bool GetCooked()
+    {
+        return cooked;
+    }
+    public bool GetCanBurn()
+    {
+        return canBurn;
+    }
     void Start()
     {
         cooked = false;
@@ -20,7 +40,10 @@ public class Ingredient : MonoBehaviour
         }
         else
         {
-            renderer.material.color = burnedColor;
+            if (canBurn)
+            {
+                renderer.material.color = burnedColor;
+            }
         }
     }
     void PickUp()

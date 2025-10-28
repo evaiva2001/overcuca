@@ -15,8 +15,9 @@ public class Interactable : MonoBehaviour
 
     int focusCount;
 
-    [SerializeField] float cookingTime;
     bool isCooking;
+
+    [SerializeField] float multiplyCookingTime;
 
     private void Start()
     {
@@ -54,11 +55,28 @@ public class Interactable : MonoBehaviour
 
     public void Interact(Texture playerTexture)
     {
-        if ( (!isCooking && placedIngredient != null))
-        {
-            StartCoroutine(Cook(playerTexture));
+        bool cooked = placedIngredient.GetCooked();
+        bool canBurn = placedIngredient.GetCanBurn();
 
+        if (!cooked)
+        {
+            if (!isCooking && placedIngredient != null)
+            {
+                float cookingTime = placedIngredient.GetCookingTime();
+                StartCoroutine(Cook(playerTexture, cookingTime));
+            }
         }
+        else
+        {
+            if (!isCooking && placedIngredient != null && canBurn)
+            {
+                float burnTime = placedIngredient.GetBurnTime();
+                StartCoroutine(Burn(playerTexture, burnTime));
+            }
+        }
+
+        
+
     }
 
     public bool CanPlace(Ingredient wannaDrop)
@@ -94,17 +112,31 @@ public class Interactable : MonoBehaviour
         placedIngredient.gameObject.transform.localPosition = new Vector3(0, 0, 0);
 
     }
-    IEnumerator Cook(Texture playerTexture)
+    IEnumerator Cook(Texture playerTexture, float cookingTime)
     {
         renderer.material.mainTexture = playerTexture;
         isCooking = true;   
 
 
-        yield return new WaitForSeconds(cookingTime);
+        yield return new WaitForSeconds(cookingTime * multiplyCookingTime);
 
         placedIngredient.Cook();
         isCooking = false;
 
+
+        renderer.material.mainTexture = initTexture;
+
+    }
+    IEnumerator Burn(Texture playerTexture, float burnTime)
+    {
+        renderer.material.mainTexture = playerTexture;
+        isCooking = true;   
+
+
+        yield return new WaitForSeconds(burnTime * multiplyCookingTime);
+
+        placedIngredient.Cook();
+        isCooking = false;
 
         renderer.material.mainTexture = initTexture;
 
