@@ -19,8 +19,11 @@ public class Interactable : MonoBehaviour
 
     [SerializeField] float multiplyCookingTime;
 
+    Animator anim;
+
     private void Start()
     {
+        anim = GetComponent<Animator>();
         renderer = this.GetComponent<MeshRenderer>();
         initTexture = renderer.material.mainTexture;
         focusCount = 0;
@@ -115,13 +118,20 @@ public class Interactable : MonoBehaviour
     IEnumerator Cook(Texture playerTexture, float cookingTime)
     {
         renderer.material.mainTexture = playerTexture;
-        isCooking = true;   
-
+        isCooking = true;
+        if (anim != null)
+        {
+            anim.SetBool("cooking", true);
+        }
 
         yield return new WaitForSeconds(cookingTime * multiplyCookingTime);
 
         placedIngredient.Cook();
         isCooking = false;
+        if (anim != null)
+        {
+            anim.SetBool("cooking", false);
+        }
 
 
         renderer.material.mainTexture = initTexture;
@@ -130,13 +140,21 @@ public class Interactable : MonoBehaviour
     IEnumerator Burn(Texture playerTexture, float burnTime)
     {
         renderer.material.mainTexture = playerTexture;
-        isCooking = true;   
+        isCooking = true;
+        if (anim != null)
+        {
+            anim.SetBool("cooking", true);
+        }
 
 
         yield return new WaitForSeconds(burnTime * multiplyCookingTime);
 
         placedIngredient.Cook();
         isCooking = false;
+        if (anim != null)
+        {
+            anim.SetBool("cooking", false);
+        }
 
         renderer.material.mainTexture = initTexture;
 
